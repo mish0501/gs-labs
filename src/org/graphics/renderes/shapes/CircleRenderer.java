@@ -66,7 +66,7 @@ public class CircleRenderer extends BaseShapeRenderer implements ShapeRenderer {
     @Override
     protected void updateVertices() {
         // Generate vertex data
-        float[] vertices = new float[(segments + 2) * 6];
+        float[] vertices = new float[vertexCount * 6];
         vertices[0] = centerX;
         vertices[1] = centerY;
         vertices[2] = 0.0f;
