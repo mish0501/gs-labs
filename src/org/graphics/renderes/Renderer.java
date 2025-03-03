@@ -16,7 +16,11 @@ public class Renderer {
         shaderProgram = new ShaderProgram("res/shaders/vertexShader.vert", "res/shaders/fragmentShader.frag");
 
         float[] vertices = {
-                0.0f, 0.0f, 0.0f
+                0.4f, -0.8f, 0.0f,
+                -0.6f, 0.2f, 0.0f,
+                0.6f, 0.2f, 0.0f,
+                -0.4f, -0.8f, 0.0f,
+                0.0f, 0.8f, 0.0f,
         };
 
         vaoID = glGenVertexArrays();
@@ -41,7 +45,7 @@ public class Renderer {
 
         glPointSize(10.0f);
         glBindVertexArray(vaoID);
-        glDrawArrays(GL_POINTS, 0, 1);
+        glDrawArrays(GL_LINE_LOOP, 0, 5);
         glBindVertexArray(0);
     }
 }
