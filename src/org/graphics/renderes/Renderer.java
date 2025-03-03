@@ -18,12 +18,13 @@ public class Renderer {
 
         float[] vertices = {
                 // X, Y, Z      R, G, B
-                0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,  // Център - Бял
-                -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // Горе вляво - Червен
-                0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  // Горе вдясно - Зелен
-                0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  // Долу вдясно - Син
-                -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  // Долу вляво - Жълт
-                -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f   // (Повторение) Затваряне на правоъгълника
+                -0.6f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f,
+                -0.8f, 0.4f, 0.0f, 1.0f, 0.0f, 0.0f,
+                -0.4f, 0.4f, 0.0f, 0.0f, 1.0f, 0.0f,
+                -0.6f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                -0.4f, -0.4f, 0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, -0.4f, 0.0f, 0.0f, 0.0f, 1.0f
         };
 
         vaoID = glGenVertexArrays();
@@ -51,9 +52,9 @@ public class Renderer {
     public void render() {
         shaderProgram.use();
 
-        glPointSize(10.0f);
+        glLineWidth(2.0f);
         glBindVertexArray(vaoID);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
+        glDrawArrays(GL_LINE_STRIP, 0, 7);
         glBindVertexArray(0);
     }
 }
