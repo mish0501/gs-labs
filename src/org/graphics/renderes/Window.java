@@ -35,6 +35,7 @@ public class Window {
 
         renderer = new Renderer();
         renderer.init();
+        renderer.updateAspectRation(width, height);
     }
 
     private void loop() {
@@ -46,6 +47,8 @@ public class Window {
             GLFW.glfwSwapBuffers(window);
             GLFW.glfwPollEvents();
         }
+
+        renderer.cleanup();
     }
 
     private void cleanup() {
