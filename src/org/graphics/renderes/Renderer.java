@@ -18,13 +18,27 @@ public class Renderer {
 
         float[] vertices = {
                 // X, Y, Z      R, G, B
-                -0.6f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f,
-                -0.8f, 0.4f, 0.0f, 1.0f, 0.0f, 0.0f,
-                -0.4f, 0.4f, 0.0f, 0.0f, 1.0f, 0.0f,
-                -0.6f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                -0.4f, -0.4f, 0.0f, 0.0f, 0.0f, 1.0f,
-                0.0f, -0.4f, 0.0f, 0.0f, 0.0f, 1.0f
+                // Left Triangle
+                0.0f, 0.8f, 0.0f, 1.0f, 1.0f, 1.0f,
+                0.0f, -0.4f, 0.0f, 0.4f, 0.4f, 0.4f,
+                -0.6f, -0.4f, 0.0f, 0.4f, 0.4f, 0.4f,
+
+                // Right Triangle
+                0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
+                0.0f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f,
+                0.6f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f,
+
+                // Yellow Triangle
+                0.0f, 0.75f, 0.0f, 1.0f, 1.0f, 0.0f,
+                0.0f, 0.55f, 0.0f, 1.0f, 1.0f, 0.0f,
+                0.25f, 0.65f, 0.0f, 1.0f, 1.0f, 0.0f,
+
+                // Blue Triangles
+                -0.8f, -0.4f, 0.0f, 0.0f, 0.7f, 1.0f,
+                -0.4f, -0.8f, 0.0f, 0.0f, 0.7f, 1.0f,
+                0.0f, -0.4f, 0.0f, 0.0f, 0.7f, 1.0f,
+                0.4f, -0.8f, 0.0f, 0.0f, 0.7f, 1.0f,
+                0.8f, -0.4f, 0.0f, 0.0f, 0.7f, 1.0f,
         };
 
         vaoID = glGenVertexArrays();
@@ -54,7 +68,10 @@ public class Renderer {
 
         glLineWidth(2.0f);
         glBindVertexArray(vaoID);
-        glDrawArrays(GL_LINE_STRIP, 0, 7);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 3, 3);
+        glDrawArrays(GL_TRIANGLES, 6, 3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 9, 5);
         glBindVertexArray(0);
     }
 }
