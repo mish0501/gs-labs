@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
 
 
 public class Renderer {
+    @SuppressWarnings("FieldCanBeLocal")
     private int vaoID, vboID;
     private ShaderProgram shaderProgram;
 
@@ -16,11 +17,13 @@ public class Renderer {
         shaderProgram = new ShaderProgram("res/shaders/vertexShader.vert", "res/shaders/fragmentShader.frag");
 
         float[] vertices = {
-                0.4f, -0.8f, 0.0f,
-                -0.6f, 0.2f, 0.0f,
-                0.6f, 0.2f, 0.0f,
-                -0.4f, -0.8f, 0.0f,
-                0.0f, 0.8f, 0.0f,
+                // X, Y, Z      R, G, B
+                0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,  // Център - Бял
+                -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // Горе вляво - Червен
+                0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  // Горе вдясно - Зелен
+                0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  // Долу вдясно - Син
+                -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  // Долу вляво - Жълт
+                -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f   // (Повторение) Затваряне на правоъгълника
         };
 
         vaoID = glGenVertexArrays();
@@ -33,8 +36,13 @@ public class Renderer {
         verticesBuffer.put(vertices).flip();
         glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
+        // Атрибут 0 - Позиция (vec3)
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * Float.BYTES, 0);
         glEnableVertexAttribArray(0);
+
+        // Атрибут 1 - Цвят (vec3)
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
+        glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -45,7 +53,7 @@ public class Renderer {
 
         glPointSize(10.0f);
         glBindVertexArray(vaoID);
-        glDrawArrays(GL_LINE_LOOP, 0, 5);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
         glBindVertexArray(0);
     }
 }
