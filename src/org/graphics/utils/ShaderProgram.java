@@ -1,5 +1,9 @@
 package org.graphics.utils;
 
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -31,6 +35,18 @@ public class ShaderProgram {
 
     public void use() {
         glUseProgram(programId);
+    }
+
+    public void setUniform(String name, Matrix4f matrix) {
+        int location = glGetUniformLocation(programId, name);
+
+        if(location == -1) {
+            throw new IllegalStateException("Грешка при намирането на униформа: " + name);
+        }
+
+        FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+        matrix.get(matrixBuffer);
+        glUniformMatrix4fv(location, false, matrixBuffer);
     }
 
     private String loadShader(String path) {
