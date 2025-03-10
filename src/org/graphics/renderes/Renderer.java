@@ -56,7 +56,8 @@ public class Renderer {
         Matrix4f modelMatrix = new Matrix4f();
         modelMatrix
                 .identity()
-                .rotate((float) Math.PI / 6, 0.0f, 0.0f, 1.0f);
+                .scale(1.2f, 0.7f, 0f)
+                .translate(0.3f, 0.9f, 0f);
 
         shaderProgram.setUniform("modelMatrix", modelMatrix);
 
