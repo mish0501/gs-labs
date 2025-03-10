@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 import java.nio.FloatBuffer;
 
+import org.graphics.renderes.shapes.ShapeRenderer;
 import org.graphics.utils.ShaderProgram;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
@@ -13,6 +14,7 @@ public class Renderer {
     @SuppressWarnings("FieldCanBeLocal")
     private int vaoID, vboID;
     private ShaderProgram shaderProgram;
+//    private ShapeRenderer[] shapes;
 
     public void init() {
         shaderProgram = new ShaderProgram("res/shaders/vertexShader.vert", "res/shaders/fragmentShader.frag");
@@ -47,24 +49,14 @@ public class Renderer {
 
     }
 
-    private float translationX = 0.0f;
-    private float translationY = 0.0f;
-    private float speed = 0.0005f;
 
     public void render() {
         shaderProgram.use();
 
-        translationX += speed;
-        translationY += speed;
-
-        if (translationX > 0.5f || translationX < -0.5f) {
-            speed = -speed;
-        }
-
         Matrix4f modelMatrix = new Matrix4f();
         modelMatrix
                 .identity()
-                .translate(translationX, translationY, 0f);
+                .rotate((float) Math.PI / 6, 0.0f, 0.0f, 1.0f);
 
         shaderProgram.setUniform("modelMatrix", modelMatrix);
 
@@ -72,5 +64,17 @@ public class Renderer {
         glBindVertexArray(vaoID);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
+    }
+
+    public void cleanup() {
+//        for (ShapeRenderer shape : shapes) {
+//            shape.cleanup();
+//        }
+    }
+
+    public void updateAspectRation(int width, int height) {
+//        for (ShapeRenderer shape : shapes) {
+//            shape.updateAspectRation(width, height);
+//        }
     }
 }
