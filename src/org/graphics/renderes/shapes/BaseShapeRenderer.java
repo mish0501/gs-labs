@@ -5,8 +5,8 @@ public abstract class BaseShapeRenderer {
 
     public void updateAspectRation(int width, int height) {
         aspectRation = (float) width / height;
-        updateVertices();
+        calculateVertices();
     }
 
-    protected abstract void updateVertices();
+    protected abstract void calculateVertices();
 }

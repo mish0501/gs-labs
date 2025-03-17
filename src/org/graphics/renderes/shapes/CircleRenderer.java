@@ -1,5 +1,6 @@
 package org.graphics.renderes.shapes;
 
+import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -24,7 +25,7 @@ public class CircleRenderer extends BaseShapeRenderer implements ShapeRenderer {
         this.radius = radius;
         this.segments = 100;
 
-        updateVertices();
+        calculateVertices();
     }
 
     public CircleRenderer(float centerX, float centerY, float radius, int segments) {
@@ -35,7 +36,7 @@ public class CircleRenderer extends BaseShapeRenderer implements ShapeRenderer {
         this.radius = radius;
         this.segments = segments;
 
-        updateVertices();
+        calculateVertices();
     }
 
     public CircleRenderer(float centerX, float centerY, float radius, int segments, float[] centerColor) {
@@ -47,7 +48,7 @@ public class CircleRenderer extends BaseShapeRenderer implements ShapeRenderer {
         this.segments = segments;
         this.centerColor = centerColor;
 
-        updateVertices();
+        calculateVertices();
     }
 
     public CircleRenderer(float centerX, float centerY, float radius, int segments, float[] centerColor, float[] edgeColor) {
@@ -60,11 +61,11 @@ public class CircleRenderer extends BaseShapeRenderer implements ShapeRenderer {
         this.centerColor = centerColor;
         this.edgeColor = edgeColor;
 
-        updateVertices();
+        calculateVertices();
     }
 
     @Override
-    protected void updateVertices() {
+    protected void calculateVertices() {
         // Generate vertex data
         float[] vertices = new float[vertexCount * 6];
         vertices[0] = centerX;
@@ -117,5 +118,10 @@ public class CircleRenderer extends BaseShapeRenderer implements ShapeRenderer {
     public void cleanup() {
         glDeleteBuffers(vboID);
         glDeleteVertexArrays(vaoID);
+    }
+
+    @Override
+    public Matrix4f getModelMatrix() {
+        return null;
     }
 }

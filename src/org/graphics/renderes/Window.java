@@ -17,13 +17,13 @@ public class Window {
     }
 
     private void init() {
-        if(!GLFW.glfwInit()){
+        if (!GLFW.glfwInit()) {
             throw new IllegalStateException("Грешка при инициализацията на GLFW!");
         }
 
         window = GLFW.glfwCreateWindow(width, height, title, 0, 0);
 
-        if(window == 0){
+        if (window == 0) {
             throw new IllegalStateException("Грешка при създаване на прозореца!");
         }
 
@@ -39,8 +39,9 @@ public class Window {
     }
 
     private void loop() {
-        while(!GLFW.glfwWindowShouldClose(window)){
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        while (!GLFW.glfwWindowShouldClose(window)) {
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
             renderer.render();
 
