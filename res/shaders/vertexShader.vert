@@ -10,7 +10,7 @@ uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
 void main() {
-    if (gl_VertexID == 0) {
+    if (gl_VertexID < 3) {
         gl_Position = modelMatrix * vec4(aPos, 1.0);
     } else {
         gl_Position = vec4(aPos, 1.0);

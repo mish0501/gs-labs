@@ -22,8 +22,12 @@ public class Renderer {
 
         float[] vertices = {
                 // X,     Y,     Z,     R,   G,   B
-                0.2f, 0.1f, 0.3f, 1.0f, 1.0f, 1.0f,
-                0.2f, 0.1f, 0.3f, 1.0f, 0.0f, 0.0f,
+                0f, 0f, 0f, 1.0f, 1.0f, 1.0f,
+                1f, 0f, 0f, 1.0f, 1.0f, 1.0f,
+                0f, 0.5f, 0f, 1.0f, 1.0f, 1.0f,
+                0f, 0f, 0f, 1.0f, 0f, 0f,
+                1f, 0f, 0f, 1.0f, 0f, 0f,
+                0f, 0.5f, 0f, 1.0f, 0f, 0f,
         };
 
         vaoID = glGenVertexArrays();
@@ -52,13 +56,12 @@ public class Renderer {
         shaderProgram.use();
 
         Matrix4f modelMatrix = new Matrix4f().identity()
-                .translate(-0.3f, -0.3f, -0.2f)
-                .scale(2f);
+                .translate(0.1f,0.2f,0f)
+                .rotate((float) Math.toRadians(-90), 0, 0, 1);
         shaderProgram.setUniform("modelMatrix", modelMatrix);
 
-        glPointSize(10.0f);
         glBindVertexArray(vaoID);
-        glDrawArrays(GL_POINTS, 0, 2);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
     }
 
