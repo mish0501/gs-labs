@@ -2,7 +2,7 @@ package org.graphics.renderes;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL46.*;
 
 public class Window {
     private long window;
@@ -30,8 +30,8 @@ public class Window {
         GLFW.glfwMakeContextCurrent(window);
 
         GL.createCapabilities();
-        GL11.glViewport(0, 0, width, height);
-        GL11.glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glViewport(0, 0, width, height);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
         renderer = new Renderer();
         renderer.init();
@@ -40,8 +40,8 @@ public class Window {
 
     private void loop() {
         while (!GLFW.glfwWindowShouldClose(window)) {
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+            glEnable(GL_DEPTH_TEST);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             renderer.render();
 
