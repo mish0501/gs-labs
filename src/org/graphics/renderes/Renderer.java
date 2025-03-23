@@ -21,13 +21,24 @@ public class Renderer {
         shaderProgram = new ShaderProgram("res/shaders/vertexShader.vert", "res/shaders/fragmentShader.frag");
 
         float[] vertices = {
-                // X,     Y,     Z,     R,   G,   B
-                0f, 0f, 0f, 1.0f, 1.0f, 1.0f,
-                1f, 0f, 0f, 1.0f, 1.0f, 1.0f,
-                0f, 0.5f, 0f, 1.0f, 1.0f, 1.0f,
-                0f, 0f, 0f, 1.0f, 0f, 0f,
-                1f, 0f, 0f, 1.0f, 0f, 0f,
-                0f, 0.5f, 0f, 1.0f, 0f, 0f,
+                0f, 0.8f, 0f, 0f, 0.8f, 0f,
+                -0.4f, 0.4f, 0f, 0f, 0.8f, 0f,
+                0.4f, 0.4f, 0f, 0f, 0.8f, 0f,
+
+                0f, 0.6f, 0f, 0f, 0.7f, 0f,
+                -0.6f, 0f, 0f, 0f, 0.7f, 0f,
+                0.6f, 0f, 0f, 0f, 0.7f, 0f,
+
+                0f, 0.2f, 0f, 0f, 0.6f, 0f,
+                -0.7f, -0.4f, 0f, 0f, 0.6f, 0f,
+                0.7f, -0.4f, 0f, 0f, 0.6f, 0f,
+
+                -0.1f, -0.4f, 0f, 0.4f, 0.2f, 0f,
+                -0.1f, -0.7f, 0f, 0.4f, 0.2f, 0f,
+                0.1f, -0.7f, 0f, 0.4f, 0.2f, 0f,
+                0.1f, -0.7f, 0f, 0.4f, 0.2f, 0f,
+                0.1f, -0.4f, 0f, 0.4f, 0.2f, 0f,
+                -0.1f, -0.4f, 0f, 0.4f, 0.2f, 0f,
         };
 
         vaoID = glGenVertexArrays();
@@ -55,13 +66,12 @@ public class Renderer {
     public void render() {
         shaderProgram.use();
 
-        Matrix4f modelMatrix = new Matrix4f().identity()
-                .translate(0.1f,0.2f,0f)
-                .rotate((float) Math.toRadians(-90), 0, 0, 1);
+        Matrix4f modelMatrix = new Matrix4f().identity();
         shaderProgram.setUniform("modelMatrix", modelMatrix);
 
         glBindVertexArray(vaoID);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 9);
+        glDrawArrays(GL_TRIANGLE_STRIP, 9, 6);
         glBindVertexArray(0);
     }
 
