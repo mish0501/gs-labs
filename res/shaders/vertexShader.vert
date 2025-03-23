@@ -10,11 +10,7 @@ uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
 void main() {
-    if (gl_VertexID < 3) {
-        gl_Position = modelMatrix * vec4(aPos, 1.0);
-    } else {
-        gl_Position = vec4(aPos, 1.0);
-    }
+    gl_Position = modelMatrix * vec4(aPos, 1.0);
 
     vertexColor = aColor; // Предаване на цвета към фрагментния шейдър
 }
