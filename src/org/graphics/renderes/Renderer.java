@@ -52,7 +52,8 @@ public class Renderer {
         shaderProgram.use();
 
         Matrix4f modelMatrix = new Matrix4f().identity()
-                .rotate((float) Math.toRadians(-30), 0, 0, 1);
+                .translate(-0.3f, -0.3f, -0.2f)
+                .scale(2f);
         shaderProgram.setUniform("modelMatrix", modelMatrix);
 
         glPointSize(10.0f);
