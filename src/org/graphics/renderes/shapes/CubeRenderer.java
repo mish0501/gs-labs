@@ -56,17 +56,17 @@ public class CubeRenderer extends BaseShapeRenderer implements ShapeRenderer {
                 bottomRight[0], bottomRight[1], bottomRight[2], rightFaceColor[0], rightFaceColor[1], rightFaceColor[2],
                 bottomRight[0], bottomRight[1], topLeft[2], rightFaceColor[0], rightFaceColor[1], rightFaceColor[2],
 
-                // Bottom face
-                topLeft[0], topLeft[1], topLeft[2], bottomFaceColor[0], bottomFaceColor[1], bottomFaceColor[2],
-                bottomRight[0], topLeft[1], topLeft[2], bottomFaceColor[0], bottomFaceColor[1], bottomFaceColor[2],
-                bottomRight[0], topLeft[1], bottomRight[2], bottomFaceColor[0], bottomFaceColor[1], bottomFaceColor[2],
-                topLeft[0], topLeft[1], bottomRight[2], bottomFaceColor[0], bottomFaceColor[1], bottomFaceColor[2],
-
                 // Top face
-                topLeft[0], bottomRight[1], topLeft[2], topFaceColor[0], topFaceColor[1], topFaceColor[2],
-                bottomRight[0], bottomRight[1], topLeft[2], topFaceColor[0], topFaceColor[1], topFaceColor[2],
-                bottomRight[0], bottomRight[1], bottomRight[2], topFaceColor[0], topFaceColor[1], topFaceColor[2],
-                topLeft[0], bottomRight[1], bottomRight[2], topFaceColor[0], topFaceColor[1], topFaceColor[2]
+                topLeft[0], topLeft[1], topLeft[2], topFaceColor[0], topFaceColor[1], topFaceColor[2],
+                bottomRight[0], topLeft[1], topLeft[2], topFaceColor[0], topFaceColor[1], topFaceColor[2],
+                bottomRight[0], topLeft[1], bottomRight[2], topFaceColor[0], topFaceColor[1], topFaceColor[2],
+                topLeft[0], topLeft[1], bottomRight[2], topFaceColor[0], topFaceColor[1], topFaceColor[2],
+
+                // Bottom face
+                topLeft[0], bottomRight[1], topLeft[2], bottomFaceColor[0], bottomFaceColor[1], bottomFaceColor[2],
+                bottomRight[0], bottomRight[1], topLeft[2], bottomFaceColor[0], bottomFaceColor[1], bottomFaceColor[2],
+                bottomRight[0], bottomRight[1], bottomRight[2], bottomFaceColor[0], bottomFaceColor[1], bottomFaceColor[2],
+                topLeft[0], bottomRight[1], bottomRight[2], bottomFaceColor[0], bottomFaceColor[1], bottomFaceColor[2]
         };
 
         int[] indices = {
