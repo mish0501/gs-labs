@@ -1,6 +1,5 @@
 package org.graphics.renderes;
 
-import org.graphics.renderes.shapes.CubeRenderer;
 import org.graphics.renderes.shapes.Pyramid;
 import org.graphics.renderes.shapes.ShapeRenderer;
 import org.graphics.utils.ShaderProgram;
@@ -19,10 +18,44 @@ public class Renderer {
         shapes = new ShapeRenderer[]{
                 new Pyramid(
                         new Vector3f[]{
-                                new Vector3f(-0.5f, 0.0f, -0.5f),
-                                new Vector3f(0.5f, 0.0f, -0.5f),
-                                new Vector3f(0.5f, 0.0f, 0.5f),
-                                new Vector3f(-0.5f, 0.0f, 0.5f),
+                                new Vector3f(-0.4f, 0.2f, -0.4f),
+                                new Vector3f(0.4f, 0.2f, -0.4f),
+                                new Vector3f(0.4f, 0.2f, 0.4f),
+                                new Vector3f(-0.4f, 0.2f, 0.4f),
+                        },
+                        new Vector3f(0, 1, 0),
+                        new Vector3f[]{
+
+                                new Vector3f(0, 0, 1),
+                                new Vector3f(0, 1, 0),
+                                new Vector3f(1, 0, 0),
+                                new Vector3f(0, 1, 0),
+                        },
+                        new Vector3f(1, 0.75f, 1)
+                ),
+                new Pyramid(
+                        new Vector3f[]{
+                                new Vector3f(-0.6f, 0.1f, -0.6f),
+                                new Vector3f(0.6f, 0.1f, -0.6f),
+                                new Vector3f(0.6f, 0.1f, 0.6f),
+                                new Vector3f(-0.6f, 0.1f, 0.6f),
+                        },
+                        new Vector3f(0, 1, 0),
+                        new Vector3f[]{
+                                new Vector3f(0, 1, 0),
+                                new Vector3f(0, 0, 1),
+                                new Vector3f(0, 1, 0),
+                                new Vector3f(1, 0, 0),
+                        },
+                        new Vector3f(1, 0.5f, 1)
+                ).setPlane(new Vector3f(0, 0.8f, 0), 0.4f),
+
+                new Pyramid(
+                        new Vector3f[]{
+                                new Vector3f(-0.75f, 0, -0.75f),
+                                new Vector3f(0.75f, 0, -0.75f),
+                                new Vector3f(0.75f, 0, 0.75f),
+                                new Vector3f(-0.75f, 0, 0.75f),
                         },
                         new Vector3f(0, 1, 0),
                         new Vector3f[]{
@@ -31,19 +64,8 @@ public class Renderer {
                                 new Vector3f(1, 0, 0),
                                 new Vector3f(0, 1, 0),
                         },
-                        new Vector3f(1, 0, 1)
-                ),
-
-                new CubeRenderer(
-                        new float[]{-0.75f, 0f, -0.75f},
-                        new float[]{0.75f, -1f, 0.75f},
-                        new float[]{1, 0, 0},
-                        new float[]{0, 1, 0},
-                        new float[]{0, 0, 1},
-                        new float[]{1, 1, 0},
-                        new float[]{0, 1, 1},
-                        new float[]{1, 0, 1}
-                )
+                        new Vector3f(1, 0.25f, 1)
+                ).setPlane(new Vector3f(0, 0.5f, 0), 0.1f)
         };
     }
 
@@ -55,7 +77,7 @@ public class Renderer {
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
         Matrix4f viewMatrix = new Matrix4f()
-                .lookAt(0f, 1f, -3f, 0, 0, 0, 0, 1, 0);
+                .lookAt(0f, 1.5f, 3f, 0, 0, 0, 0, 1, 0);
         shaderProgram.setUniform("viewMatrix", viewMatrix);
 
         for (ShapeRenderer shape : shapes) {
