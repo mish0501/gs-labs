@@ -1,7 +1,9 @@
 package org.graphics.renderes.shapes;
 
+import org.graphics.utils.GenerateObjectsUtil;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
@@ -85,26 +87,22 @@ public class CircleRenderer extends BaseShapeRenderer implements ShapeRenderer {
             vertices[i * 6 + 5] = edgeColor[2];
         }
 
-        FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(vertices.length);
-        verticesBuffer.put(vertices).flip();
+        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
+        vertexBuffer.put(vertices).flip();
 
-        vaoID = glGenVertexArrays();
-        glBindVertexArray(vaoID);
+        // Generate VAO
+        vaoID = GenerateObjectsUtil.generateVAO();
 
-        vboID = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+        // Generate VBO
+        vboID = GenerateObjectsUtil.generateVBO(vertexBuffer);
 
-        // Атрибут 0 - Позиция (vec3)
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * Float.BYTES, 0);
-        glEnableVertexAttribArray(0);
+        GenerateObjectsUtil.bindVertexAttribute();
 
-        // Атрибут 1 - Цвят (vec3)
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
-        glEnableVertexAttribArray(1);
+        // Unbind VAO/VBO
+        GenerateObjectsUtil.unbindObjects();
 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+        // Free memory
+        MemoryUtil.memFree(vertexBuffer);
     }
 
     @Override
