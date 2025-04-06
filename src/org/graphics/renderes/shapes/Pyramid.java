@@ -133,13 +133,15 @@ public class Pyramid extends BaseShapeRenderer implements ShapeRenderer {
             }
 
             // Indices for the faces between the base and the new top face
-            for (int i = 0; i < belowPlaneVertices.size(); i++) {
+            int belowSize = belowPlaneVertices.size();
+            int intersectionSize = intersectionPoints.size();
+            for (int i = 0; i < belowSize; i++) {
                 indices[index++] = i;
-                indices[index++] = (i + 1) % belowPlaneVertices.size();
-                indices[index++] = offset + i;
-                indices[index++] = offset + i;
-                indices[index++] = (i + 1) % belowPlaneVertices.size();
-                indices[index++] = offset + ((i + 1) % intersectionPoints.size());
+                indices[index++] = (i + 1) % belowSize;
+                indices[index++] = offset + (i % intersectionSize);
+                indices[index++] = offset + (i % intersectionSize);
+                indices[index++] = (i + 1) % belowSize;
+                indices[index++] = offset + ((i + 1) % intersectionSize);
             }
         } else {
             vertices = new float[(baseVertexCount + 1) * 6];
