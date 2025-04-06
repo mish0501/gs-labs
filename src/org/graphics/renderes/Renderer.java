@@ -63,44 +63,44 @@ public class Renderer {
     }
 
     private float[] generateLagrangeCurveVertices() {
-        float[][] basePoints = {
-                {-0.8f, 0.3f},
-                {0.0f, -0.1f},
-                {0.6f, 0.2f},
-        };
+        // Базовите точки
+        float[] p0 = {-0.8f, 0.3f, 0.0f, 1.0f, 0.0f, 0.0f};
+        float[] p1 = {0.0f, -0.1f, 0.0f, 1.0f, 0.0f, 0.0f};
+        float[] p2 = {0.6f, 0.2f, 0.0f, 1.0f, 0.0f, 0.0f};
 
         List<Float> data = new ArrayList<>();
 
-        // Визуализираме и базовите точки, за да проследим дали наистина лежат на кривата
-        for (float[] point : basePoints) {
-            data.add(point[0]); // x
-            data.add(point[1]); // y
-            data.add(0.0f);     // z
-            data.add(1.0f);     // r
-            data.add(0.0f);     // g
-            data.add(0.0f);     // b
+        //Да визуализираме и базовите точки, за да се убедим,
+        // че в последствие те лежат на кривата
+        for (float coord : p0) {
+            data.add(coord);
         }
 
+        for (float coord : p1) {
+            data.add(coord);
+        }
+
+        for (float coord : p2) {
+            data.add(coord);
+        }
+
+        // точките от кривата
         for (int i = 0; i < POINTS; i++) {
-            float x = -0.9f + i * (1.8f / (POINTS - 1));  // равномерно по x в интервала [-0.9, 0.9]
-            float y = 0.0f;
+            float x = -0.9f + i * (1.8f / (POINTS - 1)); // да се изобразят в интервала [-0.9, 0.9]
 
-            for (int j = 0; j < basePoints.length; j++) {
-                float Lj = 1.0f;
-                for (int k = 0; k < basePoints.length; k++) {
-                    if (j != k) {
-                        Lj *= (x - basePoints[k][0]) / (basePoints[j][0] - basePoints[k][0]);
-                    }
-                }
-                y += basePoints[j][1] * Lj;
-            }
+            float l0 = (x - p1[0]) * (x - p2[0]) / ((p0[0] - p1[0]) * (p0[0] - p2[0]));
+            float l1 = (x - p0[0]) * (x - p2[0]) / ((p1[0] - p0[0]) * (p1[0] - p2[0]));
+            float l2 = (x - p0[0]) * (x - p1[0]) / ((p2[0] - p0[0]) * (p2[0] - p1[0]));
 
+            float y = p0[1] * l0 + p1[1] * l1 + p2[1] * l2;
+
+            // позиция (x, y, z) + цвят (R,G,B)
             data.add(x);
             data.add(y);
-            data.add(0.0f);     // z
-            data.add(0.0f);     // r
-            data.add(1.0f);     // g
-            data.add(0.0f);     // b
+            data.add(0.0f);      // Z
+            data.add(0.0f);      // R
+            data.add(1.0f);      // G
+            data.add(0.0f);      // B
         }
 
         float[] array = new float[data.size()];
@@ -109,5 +109,4 @@ public class Renderer {
         }
         return array;
     }
-
 }
