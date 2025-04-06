@@ -1,5 +1,6 @@
 package org.graphics.renderes.shapes;
 
+import org.graphics.utils.GenerateObjectsUtil;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryUtil;
 
@@ -86,30 +87,18 @@ public class CubeRenderer extends BaseShapeRenderer implements ShapeRenderer {
         indexBuffer.put(indices).flip();
 
         // Generate VAO
-        vaoID = glGenVertexArrays();
-        glBindVertexArray(vaoID);
+        vaoID = GenerateObjectsUtil.generateVAO();
 
         // Generate VBO
-        vboID = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
-
-        // Атрибут 0 - Позиция (vec3)
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * Float.BYTES, 0);
-        glEnableVertexAttribArray(0);
-
-        // Атрибут 1 - Цвят (vec3)
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
-        glEnableVertexAttribArray(1);
+        vboID = GenerateObjectsUtil.generateVBO(vertexBuffer);
 
         // Generate EBO (Index Buffer)
-        eboID = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
+        eboID = GenerateObjectsUtil.generateEBO(indexBuffer);
+
+        GenerateObjectsUtil.bindVertexAttribute();
 
         // Unbind VAO/VBO
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+        GenerateObjectsUtil.unbindObjects();
 
         // Free memory
         MemoryUtil.memFree(vertexBuffer);
