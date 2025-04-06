@@ -35,7 +35,7 @@ public class Window {
 
         renderer = new Renderer();
         renderer.init();
-        renderer.updateAspectRation(width, height);
+        renderer.updateAspectRatio(width, height);
     }
 
     private void loop() {
