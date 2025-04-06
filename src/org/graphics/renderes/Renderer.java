@@ -17,11 +17,12 @@ public class Renderer {
     private int vaoID, vboID;
 
     private static final int POINTS = 100;
+    private int controlPointsCount;
 
     public void init() {
         shaderProgram = new ShaderProgram("res/shaders/vertexShader.vert", "res/shaders/fragmentShader.frag");
 
-        float[] vertices = generateLagrangeCurveVertices();
+        float[] vertices = getVertices();
 
 
         vaoID = GenerateObjectsUtil.generateVAO();
@@ -41,9 +42,10 @@ public class Renderer {
 
         glBindVertexArray(vaoID);
 
+        glDrawArrays(GL_LINE_STRIP, 0, POINTS);
         glPointSize(10);
-        glDrawArrays(GL_POINTS, 0, 3);
-        glDrawArrays(GL_LINE_STRIP, 3, POINTS);
+        glDrawArrays(GL_POINTS, POINTS, controlPointsCount);
+
 
         glBindVertexArray(0);
     }
@@ -62,51 +64,61 @@ public class Renderer {
 //        aspectRatio = (float) width / height;
     }
 
-    private float[] generateLagrangeCurveVertices() {
-        // Базовите точки
-        float[] p0 = {-0.8f, 0.3f, 0.0f, 1.0f, 0.0f, 0.0f};
-        float[] p1 = {0.0f, -0.1f, 0.0f, 1.0f, 0.0f, 0.0f};
-        float[] p2 = {0.6f, 0.2f, 0.0f, 1.0f, 0.0f, 0.0f};
+    private float[] deCasteljau(float t, float[][] points) {
+        if (points.length == 1) return points[0];
 
-        List<Float> data = new ArrayList<>();
-
-        //Да визуализираме и базовите точки, за да се убедим,
-        // че в последствие те лежат на кривата
-        for (float coord : p0) {
-            data.add(coord);
+        float[][] next = new float[points.length - 1][2];
+        for (int i = 0; i < next.length; i++) {
+            next[i][0] = (1 - t) * points[i][0] + t * points[i + 1][0];
+            next[i][1] = (1 - t) * points[i][1] + t * points[i + 1][1];
         }
 
-        for (float coord : p1) {
-            data.add(coord);
-        }
-
-        for (float coord : p2) {
-            data.add(coord);
-        }
-
-        // точките от кривата
-        for (int i = 0; i < POINTS; i++) {
-            float x = -0.9f + i * (1.8f / (POINTS - 1)); // да се изобразят в интервала [-0.9, 0.9]
-
-            float l0 = (x - p1[0]) * (x - p2[0]) / ((p0[0] - p1[0]) * (p0[0] - p2[0]));
-            float l1 = (x - p0[0]) * (x - p2[0]) / ((p1[0] - p0[0]) * (p1[0] - p2[0]));
-            float l2 = (x - p0[0]) * (x - p1[0]) / ((p2[0] - p0[0]) * (p2[0] - p1[0]));
-
-            float y = p0[1] * l0 + p1[1] * l1 + p2[1] * l2;
-
-            // позиция (x, y, z) + цвят (R,G,B)
-            data.add(x);
-            data.add(y);
-            data.add(0.0f);      // Z
-            data.add(0.0f);      // R
-            data.add(1.0f);      // G
-            data.add(0.0f);      // B
-        }
-
-        float[] array = new float[data.size()];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = data.get(i);
-        }
-        return array;
+        return deCasteljau(t, next);
     }
+
+    private float[] getVertices() {
+        final int stride = 6; // x, y, z, r, g, b
+        final float z = 0.0f;
+        final float[] curveColor = {0.0f, 1.0f, 0.0f};
+        final float[] ctrlColor = {1.0f, 0.0f, 0.0f};
+
+        float[][] controlPoints = {
+                {-0.9f, -0.6f},
+                {-0.3f, 0.9f},
+                {0.4f, 0.5f},
+                {0.3f, -0.9f},
+                {0.8f, -0.3f}
+        };
+        controlPointsCount = controlPoints.length;
+
+        float[] vertices = new float[(POINTS + controlPoints.length) * stride];
+
+        // Генерираме точки по кривата на Безие
+        for (int i = 0; i < POINTS; i++) {
+            float t = i / (float) (POINTS - 1);
+            float[] point = deCasteljau(t, controlPoints);
+
+            int offset = i * stride;
+            vertices[offset] = point[0];
+            vertices[offset + 1] = point[1];
+            vertices[offset + 2] = z;
+            vertices[offset + 3] = curveColor[0];
+            vertices[offset + 4] = curveColor[1];
+            vertices[offset + 5] = curveColor[2];
+        }
+
+        // Добавяме контролни точки в края
+        for (int i = 0; i < controlPoints.length; i++) {
+            int offset = (POINTS + i) * stride;
+            vertices[offset] = controlPoints[i][0];
+            vertices[offset + 1] = controlPoints[i][1];
+            vertices[offset + 2] = z;
+            vertices[offset + 3] = ctrlColor[0];
+            vertices[offset + 4] = ctrlColor[1];
+            vertices[offset + 5] = ctrlColor[2];
+        }
+
+        return vertices;
+    }
+
 }
