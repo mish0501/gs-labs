@@ -32,6 +32,8 @@ public class Window {
     private boolean aPressed = false;
     private boolean sPressed = false;
     private boolean dPressed = false;
+    private boolean spacePressed = false;
+    private boolean ctrlPressed = false;
 
     public Window(int width, int height, String title) {
         this.width = width;
@@ -103,6 +105,12 @@ public class Window {
                             if (key == GLFW.GLFW_KEY_D) {
                                 dPressed = (action == GLFW.GLFW_PRESS || action == GLFW.GLFW_REPEAT);
                             }
+                            if (key == GLFW.GLFW_KEY_SPACE) {
+                                spacePressed = (action == GLFW.GLFW_PRESS || action == GLFW.GLFW_REPEAT);
+                            }
+                            if (key == GLFW.GLFW_KEY_LEFT_CONTROL) {
+                                ctrlPressed = (action == GLFW.GLFW_PRESS || action == GLFW.GLFW_REPEAT);
+                            }
                         });
 
         cursorPosCallback =
@@ -170,6 +178,12 @@ public class Window {
         }
         if (dPressed) {
             camera.processKeyboard(Camera.CameraMovement.RIGHT, (float) deltaTime);
+        }
+        if (spacePressed) {
+            camera.processKeyboard(Camera.CameraMovement.UP, (float) deltaTime);
+        }
+        if (ctrlPressed) {
+            camera.processKeyboard(Camera.CameraMovement.DOWN, (float) deltaTime);
         }
     }
 

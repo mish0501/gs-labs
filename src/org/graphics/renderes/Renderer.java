@@ -78,7 +78,7 @@ public class Renderer {
     }
 
     private void calculateCrosshairVertices() {
-        float horizontalLineLength = 0.007f * aspectRatio;
+        float horizontalLineLength = 0.02f * aspectRatio;
 
         float[] crosshairVertices = {
                 // Horizontal line

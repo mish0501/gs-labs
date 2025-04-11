@@ -42,6 +42,12 @@ public class Camera {
             front.cross(up, right).normalize();
             position.add(right.mul(velocity));
         }
+        if (direction == CameraMovement.UP) {
+            position.add(new Vector3f(up).mul(velocity));
+        }
+        if (direction == CameraMovement.DOWN) {
+            position.sub(new Vector3f(up).mul(velocity));
+        }
     }
 
     public void processMouseMovement(float xOffset, float yOffset, boolean constrainPitch) {
@@ -74,6 +80,8 @@ public class Camera {
         FORWARD,
         BACKWARD,
         LEFT,
-        RIGHT
+        RIGHT,
+        UP,
+        DOWN
     }
 }
