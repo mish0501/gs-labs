@@ -1,182 +1,116 @@
 package org.graphics.renderes;
 
+import org.graphics.renderes.shapes.CubeRenderer;
+import org.graphics.renderes.shapes.PlaneRenderer;
+import org.graphics.renderes.shapes.ShapeRenderer;
+import org.graphics.utils.Camera;
 import org.graphics.utils.GenerateObjectsUtil;
 import org.graphics.utils.ShaderProgram;
-import org.lwjgl.BufferUtils;
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-
+import static org.lwjgl.opengl.GL46.*;
 
 public class Renderer {
     private ShaderProgram shaderProgram;
-    private int vaoID, vboID;
+    private ShaderProgram crosshairShaderProgram;
+    private ShapeRenderer[] shapes;
+    private float aspectRatio = 1f;
+    private Camera camera;  // Reference to the camera
 
-    private static final int DEGREE = 3; // Степен на B-spline
-    private static final int POINTS_PER_SEGMENT = 20;
-
-    private int controlPointCount; // Брой на контролни точки
-
-    // Брой на кривите сегменти
-    private int totalCurveVertices = 0;
+    private int crosshairVAO;
 
     public void init() {
         shaderProgram = new ShaderProgram("res/shaders/vertexShader.vert", "res/shaders/fragmentShader.frag");
+        crosshairShaderProgram = new ShaderProgram("res/shaders/crosshairVertexShader.vert", "res/shaders/fragmentShader.frag");
 
-        float[][] controlPoints = {
-                {-0.8f, -0.6f},
-                {-0.4f, 0.8f},
-                {0.0f, -0.4f},
-                {0.4f, 0.6f},
-                {0.8f, -0.5f}
+        shapes = new ShapeRenderer[]{
+                new CubeRenderer(
+                        new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.5f, 0.5f, 0.5f},
+                        new float[]{1.0f, 0.0f, 0.0f}, new float[]{0.0f, 1.0f, 0.0f},
+                        new float[]{0.0f, 0.0f, 1.0f}, new float[]{1.0f, 0.0f, 1.0f},
+                        new float[]{1.0f, 1.0f, 0.0f}, new float[]{0.0f, 1.0f, 1.0f}
+                ),
+                new PlaneRenderer(5.0f, 5.0f, new float[]{0.5f, 0.5f, 0.5f})
         };
-        controlPointCount = controlPoints.length;
 
-        float[] vertices = generateBSplineVertices(controlPoints);
-
-        vaoID = GenerateObjectsUtil.generateVAO();
-
-        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
-        vertexBuffer.put(vertices).flip();
-
-        vboID = GenerateObjectsUtil.generateVBO(vertexBuffer);
-
-        GenerateObjectsUtil.bindVertexAttribute();
-
-        GenerateObjectsUtil.unbindObjects();
+        calculateCrosshairVertices();
     }
 
     public void render() {
         shaderProgram.use();
 
-        glBindVertexArray(vaoID);
+        Matrix4f projectionMatrix = new Matrix4f()
+                .perspective((float) Math.toRadians(45.0f), aspectRatio, 0.1f, 100.0f);
+        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
-        // Рисуваме кривата
-        glDrawArrays(GL_LINE_STRIP, 0, totalCurveVertices);
+        // Get the view matrix from the camera
+        Matrix4f viewMatrix = camera.getViewMatrix();
+        shaderProgram.setUniform("viewMatrix", viewMatrix);
 
-        // Рисуваме контролните точки
-        glPointSize(10);
-        glDrawArrays(GL_POINTS, totalCurveVertices, controlPointCount);
+        for (ShapeRenderer shape : shapes) {
+            shaderProgram.setUniform("modelMatrix", shape.getModelMatrix());
+            shape.render();
+        }
 
-
-        glBindVertexArray(0);
+        renderCrosshair();
     }
 
     public void cleanup() {
-//        for (ShapeRenderer shape : shapes) {
-//            shape.cleanup();
-//        }
+        for (ShapeRenderer shape : shapes) {
+            shape.cleanup();
+        }
     }
 
     public void updateAspectRatio(int width, int height) {
-//        for (ShapeRenderer shape : shapes) {
-//            shape.updateAspectRation(width, height);
-//        }
-//
-//        aspectRatio = (float) width / height;
+        for (ShapeRenderer shape : shapes) {
+            shape.updateAspectRation(width, height);
+        }
+
+        aspectRatio = (float) width / height;
+        calculateCrosshairVertices();
     }
 
-    private float[] generateBSplineVertices(float[][] ctrl) {
-        int n = ctrl.length - 1;
-        int knotCount = n + DEGREE + 2;
-        float[] knot = new float[knotCount];
-
-        // Генериране на равномерно разпределен clamped knot вектор
-        for (int i = 0; i < knotCount; i++) {
-            if (i <= DEGREE) {
-                knot[i] = 0;
-                continue;
-            }
-
-            if (i >= knotCount - DEGREE - 1) {
-                knot[i] = 1;
-                continue;
-            }
-
-            knot[i] = (float) (i - DEGREE) / (knotCount - 2 * DEGREE - 1);
-        }
-
-        int segments = n - DEGREE + 1;
-        totalCurveVertices = segments * POINTS_PER_SEGMENT;
-
-        float[] vertices = new float[(totalCurveVertices + ctrl.length) * 6];
-        int vIndex = 0;
-
-        for (int i = DEGREE; i < knot.length - 1; i++) {
-            float tStart = knot[i];
-            float tEnd = knot[i + 1];
-
-            if (tStart == tEnd) continue;
-
-            for (int j = 0; j < POINTS_PER_SEGMENT; j++) {
-                float t = tStart + (tEnd - tStart) * j / (POINTS_PER_SEGMENT - 1);
-                float[] pt = deBoor(t, ctrl, knot);
-
-                // Добавяме позиция
-                vertices[vIndex++] = pt[0];
-                vertices[vIndex++] = pt[1];
-                vertices[vIndex++] = 0.0f;
-
-                // Добавяме цвят (зелен)
-                vertices[vIndex++] = 0.0f;
-                vertices[vIndex++] = 1.0f;
-                vertices[vIndex++] = 0.0f;
-            }
-        }
-
-        // Контролните точки – в червено
-        for (float[] p : ctrl) {
-            vertices[vIndex++] = p[0];
-            vertices[vIndex++] = p[1];
-            vertices[vIndex++] = 0.0f;
-
-            vertices[vIndex++] = 1.0f;
-            vertices[vIndex++] = 0.0f;
-            vertices[vIndex++] = 0.0f;
-        }
-
-        return vertices;
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
 
-    private float[] deBoor(float t, float[][] ctrl, float[] knot) {
-        int n = ctrl.length - 1;
-        int m = knot.length - 1;
+    private void calculateCrosshairVertices() {
+        float horizontalLineLength = 0.007f * aspectRatio;
 
-        int s = DEGREE;
-        while (s < m - 1 && t >= knot[s + 1]) s++;
+        float[] crosshairVertices = {
+                // Horizontal line
+                -horizontalLineLength, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                horizontalLineLength, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                // Vertical line
+                0.0f, -0.02f, 0.0f, 0.0f, 1.0f, 0.0f,
+                0.0f, 0.02f, 0.0f, 0.0f, 1.0f, 0.0f
+        };
 
-        float[][] d = new float[DEGREE + 1][2];
+        crosshairVAO = GenerateObjectsUtil.generateVAO();
 
-        for (int j = 0; j <= DEGREE; j++) {
-            int index = s - DEGREE + j;
-            if (index < 0) index = 0;
-            if (index > n) index = n;
+        FloatBuffer buffer = MemoryUtil.memAllocFloat(crosshairVertices.length);
+        buffer.put(crosshairVertices).flip();
 
-            d[j][0] = ctrl[index][0];
-            d[j][1] = ctrl[index][1];
-        }
+        GenerateObjectsUtil.generateVBO(buffer);
 
-        for (int r = 1; r <= DEGREE; r++) {
-            for (int j = DEGREE; j >= r; j--) {
-                int i1 = s - DEGREE + j;
-                int i2 = s + 1 + j - r;
+        GenerateObjectsUtil.bindVertexAttribute();
 
-                // Ограничаваме достъпа до допустими граници
-                if (i1 < 0) i1 = 0;
-                if (i1 >= knot.length) i1 = knot.length - 1;
-                if (i2 < 0) i2 = 0;
-                if (i2 >= knot.length) i2 = knot.length - 1;
+        GenerateObjectsUtil.unbindObjects();
 
-                float denom = knot[i2] - knot[i1];
-                float alpha = denom == 0 ? 0 : (t - knot[i1]) / denom;
+        MemoryUtil.memFree(buffer);
+    }
 
-                d[j][0] = (1 - alpha) * d[j - 1][0] + alpha * d[j][0];
-                d[j][1] = (1 - alpha) * d[j - 1][1] + alpha * d[j][1];
-            }
-        }
+    private void renderCrosshair() {
+        glDisable(GL_DEPTH_TEST); // Disable depth test so crosshair always renders on top
+        crosshairShaderProgram.use();
 
-        return d[DEGREE];
+        glLineWidth(3);
+        glBindVertexArray(crosshairVAO);
+        glDrawArrays(GL_LINES, 0, 4); // Render two lines
+        glBindVertexArray(0);
+        glEnable(GL_DEPTH_TEST); // Re-enable depth testing
     }
 }
