@@ -30,11 +30,6 @@ public class Renderer {
                 -0.6f, -0.6f, 0.0f, 1.0f, 0.0f, 0.0f,
                 0.2f, -0.6f, 0.0f, 1.0f, 0.0f, 0.0f,
                 -0.2f, 0.2f, 0.0f, 1.0f, 0.0f, 0.0f,
-
-                // Триъгълник отгоре (зелен)
-                -0.3f, -0.3f, 0.0f, 0.0f, 1.0f, 0.0f,
-                0.5f, -0.3f, 0.0f, 0.0f, 1.0f, 0.0f,
-                0.1f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
         };
 
         vao = GenerateObjectsUtil.generateVAO();
@@ -55,13 +50,11 @@ public class Renderer {
 
     public void render() {
         shaderProgram.use();
+        float time = (System.nanoTime() / 1_000_000_000.0f);
+        shaderProgram.setUniform("time", time);
 
         glBindVertexArray(vao);
-        shaderProgram.setUniform("alpha", 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        shaderProgram.setUniform("alpha", alpha);
-        glDrawArrays(GL_TRIANGLES, 3, 3);
         glBindVertexArray(0);
 
 //        renderCrosshair();

@@ -77,7 +77,7 @@ public class Window {
         renderer.setCamera(camera); // Pass the camera to the renderer
 
         // Input callbacks
-        setupInputCallbacks();
+//        setupInputCallbacks();
 //        updateCursorMode();
 
         // Initialize lastFrameTime
@@ -157,7 +157,7 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT);
 
             // Process Input
-            processInput();
+//            processInput();
 
             // Render
             renderer.render();
@@ -166,7 +166,7 @@ public class Window {
             GLFW.glfwPollEvents();
 
             // Update delta time
-            getDeltaTime();
+//            getDeltaTime();
         }
 
         renderer.cleanup();
