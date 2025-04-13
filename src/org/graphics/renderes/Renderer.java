@@ -1,12 +1,9 @@
 package org.graphics.renderes;
 
-import org.graphics.renderes.shapes.CubeRenderer;
-import org.graphics.renderes.shapes.PlaneRenderer;
-import org.graphics.renderes.shapes.ShapeRenderer;
 import org.graphics.utils.Camera;
 import org.graphics.utils.GenerateObjectsUtil;
+import org.graphics.utils.InputAction;
 import org.graphics.utils.ShaderProgram;
-import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -14,60 +11,88 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL46.*;
 
 public class Renderer {
+    private int vao;
     private ShaderProgram shaderProgram;
     private ShaderProgram crosshairShaderProgram;
-    private ShapeRenderer[] shapes;
     private float aspectRatio = 1f;
     private Camera camera;  // Reference to the camera
+
+    private float alpha = 1.0f; // Alpha value for the shapes
 
     private int crosshairVAO;
 
     public void init() {
         shaderProgram = new ShaderProgram("res/shaders/vertexShader.vert", "res/shaders/fragmentShader.frag");
-        crosshairShaderProgram = new ShaderProgram("res/shaders/crosshairVertexShader.vert", "res/shaders/fragmentShader.frag");
+        crosshairShaderProgram = new ShaderProgram("res/shaders/crosshairVertexShader.vert", "res/shaders/crosshairFragmentShader.frag");
 
-        shapes = new ShapeRenderer[]{
-                new CubeRenderer(
-                        new float[]{0.0f, 0.0f, 0.0f}, new float[]{0.5f, 0.5f, 0.5f},
-                        new float[]{1.0f, 0.0f, 0.0f}, new float[]{0.0f, 1.0f, 0.0f},
-                        new float[]{0.0f, 0.0f, 1.0f}, new float[]{1.0f, 0.0f, 1.0f},
-                        new float[]{1.0f, 1.0f, 0.0f}, new float[]{0.0f, 1.0f, 1.0f}
-                ),
-                new PlaneRenderer(5.0f, 5.0f, new float[]{0.5f, 0.5f, 0.5f})
+        float[] vertices = {
+                // Триъгълник отдолу (червен)
+                -0.6f, -0.6f, 0.0f, 1.0f, 0.0f, 0.0f,
+                0.2f, -0.6f, 0.0f, 1.0f, 0.0f, 0.0f,
+                -0.2f, 0.2f, 0.0f, 1.0f, 0.0f, 0.0f,
+
+                // Триъгълник отгоре (зелен)
+                -0.3f, -0.3f, 0.0f, 0.0f, 1.0f, 0.0f,
+                0.5f, -0.3f, 0.0f, 0.0f, 1.0f, 0.0f,
+                0.1f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
         };
 
-        calculateCrosshairVertices();
+        vao = GenerateObjectsUtil.generateVAO();
+
+        FloatBuffer buffer = MemoryUtil.memAllocFloat(vertices.length);
+        buffer.put(vertices).flip();
+
+        GenerateObjectsUtil.generateVBO(buffer);
+
+        GenerateObjectsUtil.bindVertexAttribute();
+
+        GenerateObjectsUtil.unbindObjects();
+
+        MemoryUtil.memFree(buffer);
+
+//        calculateCrosshairVertices();
     }
 
     public void render() {
         shaderProgram.use();
 
-        Matrix4f projectionMatrix = new Matrix4f()
-                .perspective((float) Math.toRadians(45.0f), aspectRatio, 0.1f, 100.0f);
-        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
+        glBindVertexArray(vao);
+        shaderProgram.setUniform("alpha", 1.0f);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        // Get the view matrix from the camera
-        Matrix4f viewMatrix = camera.getViewMatrix();
-        shaderProgram.setUniform("viewMatrix", viewMatrix);
+        shaderProgram.setUniform("alpha", alpha);
+        glDrawArrays(GL_TRIANGLES, 3, 3);
+        glBindVertexArray(0);
 
-        for (ShapeRenderer shape : shapes) {
-            shaderProgram.setUniform("modelMatrix", shape.getModelMatrix());
-            shape.render();
-        }
-
-        renderCrosshair();
+//        renderCrosshair();
     }
 
-    public void cleanup() {
-        for (ShapeRenderer shape : shapes) {
-            shape.cleanup();
+    public void handleInputAction(InputAction action) {
+        switch (action) {
+            case INCREASE -> setAlpha(clamp(alpha + 0.01f));
+            case DECREASE -> setAlpha(clamp(alpha - 0.01f));
         }
+    }
+
+    private float clamp(float value) {
+        return Math.max(0.0f, Math.min(1.0f, value));
+    }
+
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+    }
+
+
+    public void cleanup() {
+//        for (ShapeRenderer shape : shapes) {
+//            shape.cleanup();
+//        }
     }
 
     public void updateAspectRatio(int width, int height) {
-        for (ShapeRenderer shape : shapes) {
-            shape.updateAspectRation(width, height);
-        }
+//        for (ShapeRenderer shape : shapes) {
+//            shape.updateAspectRation(width, height);
+//        }
 
         aspectRatio = (float) width / height;
         calculateCrosshairVertices();
@@ -104,13 +129,13 @@ public class Renderer {
     }
 
     private void renderCrosshair() {
-        glDisable(GL_DEPTH_TEST); // Disable depth test so crosshair always renders on top
+        glDisable(GL_DEPTH_TEST | GL_BLEND); // Disable depth test so crosshair always renders on top
         crosshairShaderProgram.use();
 
         glLineWidth(3);
         glBindVertexArray(crosshairVAO);
         glDrawArrays(GL_LINES, 0, 4); // Render two lines
         glBindVertexArray(0);
-        glEnable(GL_DEPTH_TEST); // Re-enable depth testing
+        glEnable(GL_DEPTH_TEST | GL_BLEND); // Re-enable depth testing
     }
 }

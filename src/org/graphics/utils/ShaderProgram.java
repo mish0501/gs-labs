@@ -49,6 +49,15 @@ public class ShaderProgram {
         glUniformMatrix4fv(location, false, matrixBuffer);
     }
 
+    public void setUniform(String name, float value) {
+        int location = glGetUniformLocation(programId, name);
+
+        if (location != -1) {
+            glUniform1f(location, value);
+        }
+    }
+
+
     private String loadShader(String path) {
         try {
             return Files.readString(Paths.get(path), StandardCharsets.UTF_8);

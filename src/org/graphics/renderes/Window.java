@@ -3,6 +3,7 @@ package org.graphics.renderes;
 import static org.lwjgl.opengl.GL46.*;
 
 import org.graphics.utils.Camera;
+import org.graphics.utils.InputAction;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -77,7 +78,7 @@ public class Window {
 
         // Input callbacks
         setupInputCallbacks();
-        updateCursorMode();
+//        updateCursorMode();
 
         // Initialize lastFrameTime
         lastFrameTime = GLFW.glfwGetTime();
@@ -110,6 +111,12 @@ public class Window {
                             }
                             if (key == GLFW.GLFW_KEY_LEFT_CONTROL) {
                                 ctrlPressed = (action == GLFW.GLFW_PRESS || action == GLFW.GLFW_REPEAT);
+                            }
+                            if(key == GLFW.GLFW_KEY_UP && (action == GLFW.GLFW_PRESS || action == GLFW.GLFW_REPEAT)) {
+                                renderer.handleInputAction(InputAction.INCREASE);
+                            }
+                            if(key == GLFW.GLFW_KEY_DOWN && (action == GLFW.GLFW_PRESS || action == GLFW.GLFW_REPEAT)) {
+                                renderer.handleInputAction(InputAction.DECREASE);
                             }
                         });
 
@@ -145,8 +152,9 @@ public class Window {
 
     private void loop() {
         while (!GLFW.glfwWindowShouldClose(window)) {
-            glEnable(GL_DEPTH_TEST);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glClear(GL_COLOR_BUFFER_BIT);
 
             // Process Input
             processInput();
