@@ -13,13 +13,23 @@ public class GenerateObjectsUtil {
         return vaoID;
     }
 
-    public static void bindVertexAttribute(){
+    public static void bindVertexAttributeColor(){
         // Атрибут 0 - Позиция (vec3)
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * Float.BYTES, 0);
         glEnableVertexAttribArray(0);
 
         // Атрибут 1 - Цвят (vec3)
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
+        glEnableVertexAttribArray(1);
+    }
+
+    public static void bindVertexAttributeTexture(){
+        // Атрибут 0 - Позиция (vec3)
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * Float.BYTES, 0);
+        glEnableVertexAttribArray(0);
+
+        // Атрибут 1 - Цвят (vec3)
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.BYTES, 3 * Float.BYTES);
         glEnableVertexAttribArray(1);
     }
 

@@ -4,9 +4,13 @@ import org.graphics.utils.Camera;
 import org.graphics.utils.GenerateObjectsUtil;
 import org.graphics.utils.InputAction;
 import org.graphics.utils.ShaderProgram;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL46.*;
 
@@ -15,21 +19,24 @@ public class Renderer {
     private ShaderProgram shaderProgram;
     private ShaderProgram crosshairShaderProgram;
     private float aspectRatio = 1f;
-    private Camera camera;  // Reference to the camera
+    private Camera camera;
+    // Reference to the camera
+    private int textureID;
 
     private float alpha = 1.0f; // Alpha value for the shapes
 
     private int crosshairVAO;
 
     public void init() {
-        shaderProgram = new ShaderProgram("res/shaders/vertexShader.vert", "res/shaders/fragmentShader.frag");
+        shaderProgram = new ShaderProgram("res/shaders/vertexShaderTexture.vert", "res/shaders/fragmentShaderTexture.frag");
         crosshairShaderProgram = new ShaderProgram("res/shaders/crosshairVertexShader.vert", "res/shaders/crosshairFragmentShader.frag");
+        loadTexture("res/textures/sky.png");
 
         float[] vertices = {
-                // Триъгълник отдолу (червен)
-                -0.6f, -0.6f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.2f, -0.6f, 0.0f, 1.0f, 0.0f, 0.0f,
-                -0.2f, 0.2f, 0.0f, 1.0f, 0.0f, 0.0f,
+                // X Y Z U V
+                -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                0.5f, -0.5f, 0.0f, 3.0f, 0.0f,
+                0.0f, 0.5f, 0.0f, 1.5f, 3.0f
         };
 
         vao = GenerateObjectsUtil.generateVAO();
@@ -39,7 +46,7 @@ public class Renderer {
 
         GenerateObjectsUtil.generateVBO(buffer);
 
-        GenerateObjectsUtil.bindVertexAttribute();
+        GenerateObjectsUtil.bindVertexAttributeTexture();
 
         GenerateObjectsUtil.unbindObjects();
 
@@ -114,7 +121,7 @@ public class Renderer {
 
         GenerateObjectsUtil.generateVBO(buffer);
 
-        GenerateObjectsUtil.bindVertexAttribute();
+        GenerateObjectsUtil.bindVertexAttributeColor();
 
         GenerateObjectsUtil.unbindObjects();
 
@@ -130,5 +137,34 @@ public class Renderer {
         glDrawArrays(GL_LINES, 0, 4); // Render two lines
         glBindVertexArray(0);
         glEnable(GL_DEPTH_TEST | GL_BLEND); // Re-enable depth testing
+    }
+
+    private void loadTexture(String path) {
+        textureID = glGenTextures();
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        IntBuffer width = BufferUtils.createIntBuffer(1);
+        IntBuffer height = BufferUtils.createIntBuffer(1);
+        IntBuffer channels = BufferUtils.createIntBuffer(1);
+
+        STBImage.stbi_set_flip_vertically_on_load(true);
+        ByteBuffer image = STBImage.stbi_load(path, width, height, channels, 4);
+
+        if (image != null) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.get(), height.get(), 0, GL_RGBA,
+                    GL_UNSIGNED_BYTE, image);
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            STBImage.stbi_image_free(image);
+        } else {
+            System.err.println("Неуспешно зареждане на текстура: " + path);
+        }
     }
 }

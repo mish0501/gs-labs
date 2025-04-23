@@ -96,7 +96,7 @@ public class CircleRenderer extends BaseShapeRenderer implements ShapeRenderer {
         // Generate VBO
         vboID = GenerateObjectsUtil.generateVBO(vertexBuffer);
 
-        GenerateObjectsUtil.bindVertexAttribute();
+        GenerateObjectsUtil.bindVertexAttributeColor();
 
         // Unbind VAO/VBO
         GenerateObjectsUtil.unbindObjects();

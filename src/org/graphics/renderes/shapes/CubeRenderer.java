@@ -95,7 +95,7 @@ public class CubeRenderer extends BaseShapeRenderer implements ShapeRenderer {
         // Generate EBO (Index Buffer)
         eboID = GenerateObjectsUtil.generateEBO(indexBuffer);
 
-        GenerateObjectsUtil.bindVertexAttribute();
+        GenerateObjectsUtil.bindVertexAttributeColor();
 
         // Unbind VAO/VBO
         GenerateObjectsUtil.unbindObjects();

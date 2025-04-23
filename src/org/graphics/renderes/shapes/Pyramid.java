@@ -195,7 +195,7 @@ public class Pyramid extends BaseShapeRenderer implements ShapeRenderer {
 
         eboID = GenerateObjectsUtil.generateEBO(indexBuffer);
 
-        GenerateObjectsUtil.bindVertexAttribute();
+        GenerateObjectsUtil.bindVertexAttributeColor();
 
         GenerateObjectsUtil.unbindObjects();
 
